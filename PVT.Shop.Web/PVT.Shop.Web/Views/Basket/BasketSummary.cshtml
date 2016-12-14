@@ -1,0 +1,13 @@
+﻿@using System.Globalization
+@model PVT.Shop.Infrastructure.Common.Basket
+
+<li id="cart">
+    <a href="@Url.Action("Index", "Basket", new { returnUrl = Request.Url?.PathAndQuery }, null)">
+        <i class="fa fa-shopping-cart"></i> Cart(@Model.BasketItems.Sum(x => x.Quantity))
+        @if (Model.GetItemsSum() > 0)
+        {
+            <img src="http://image.flaticon.com/icons/svg/179/179444.svg" width="20" alt="">
+            <span>Total Sum: @Model.GetItemsSum().ToString(CultureInfo.InvariantCulture)</span>
+        }
+    </a>
+</li>

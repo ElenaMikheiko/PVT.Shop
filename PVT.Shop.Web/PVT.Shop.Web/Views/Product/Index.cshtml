@@ -1,0 +1,161 @@
+﻿@using System.Web.Mvc.Html
+@using PagedList.Mvc
+@using PVT.Shop.Web.Extensions
+@model PagedList.IPagedList<PVT.Shop.Infrastructure.Common.Product>
+
+@{
+    ViewBag.Title = "Products";
+
+    string currentSort = ViewBag.CurrentSort;
+
+    if (string.IsNullOrEmpty(currentSort))
+    {
+        currentSort = "id";
+    }
+}
+
+@Html.ActionLink("Add Product", "AddProduct", "Product", new { @class = "btn btn-success btn-block", style = "z-index: 10" })
+<hr class="divider" />
+
+@if ((string)TempData["state"] == "true")
+{
+    <div class="alert alert-success alert-dismissible fade in">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        @TempData["message"]
+    </div>
+}
+
+@if ((string)TempData["state"] == "false")
+{
+    <div class="alert alert-danger alert-dismissible fade in">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        @TempData["message"]
+    </div>
+}
+
+@using (Html.BeginForm("Index", "Product", FormMethod.Post, new { @class = "form-inline col-xs-12", role = "form", @style = "text-align: center; padding: 10px" }))
+{
+    <div class="form-grop" style="display: inline">
+        Find by:
+    </div>
+    <div class="form-group">
+        @Html.DropDownList("filterType", new SelectList( new[]{ new SelectListItem{ Text = "1", Value = "Name"}, new SelectListItem{ Text = "2", Value = "ID"}}, "Text", "Value", "2" ), new { @class = "form-control input-md" })
+    </div>
+
+    <div class="form-group">
+        @Html.TextBox("filterValue", ViewBag.FilterValue as string, new { @class = "form-control input-md" })
+    </div>
+
+     <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-search"></span> Search </button>
+}
+
+<div id="productstable">
+    <div class="panel panel-default">
+        <div class="panel-heading" style="text-align: center">
+            <strong>Products</strong>
+        </div>
+        <table class="table table-hover">
+            <thead class="active">
+                <tr>
+                    <th>
+                        @Html.ActionLink("ID", "Index", new { sortOrder = (string)ViewBag.IdSortParam, filterType = (string)ViewBag.FilterType, filterValue = (string)ViewBag.FilterValue})
+                        @Html.SortIdentifier(currentSort, "id")
+                    </th>
+                    <th>
+                        @Html.ActionLink("Name", "Index", new { sortOrder = (string)ViewBag.NameSortParam, filterType = (string)ViewBag.FilterType, filterValue = (string)ViewBag.FilterValue })
+                        @Html.SortIdentifier(currentSort, "name")
+                    </th>
+                    <th>
+                        @Html.ActionLink("Count", "Index", new { sortOrder = (string)ViewBag.CountSortParam, filterType = (string)ViewBag.FilterType, filterValue = (string)ViewBag.FilterValue })
+                        @Html.SortIdentifier(currentSort, "count")
+                    </th>
+                    <th>
+                        @Html.ActionLink("Price", "Index", new { sortOrder = (string)ViewBag.PriceSortParam, filterType = (string)ViewBag.FilterType, filterValue = (string)ViewBag.FilterValue })
+                        @Html.SortIdentifier(currentSort, "price")
+                    </th>
+                    <th>Display in Catalog</th>
+                    <th>Category</th>
+                    <th>Storage</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model)
+                {
+                    <tr>
+                        <td>
+                            <img src="http://image.flaticon.com/icons/svg/179/179436.svg" alt="" width="25" /> @product.Id
+                        </td>
+                        <td>@product.Name</td>
+                        <td>
+                            <img src="http://image.flaticon.com/icons/svg/265/265759.svg" alt="" width="25" /> @product.Count
+                        </td>
+                        <td>
+                            <img src="http://image.flaticon.com/icons/svg/179/179444.svg" alt="" width="25" /> @product.Price
+                        </td>
+                        <td style="text-align: center">
+                            @{
+                                var display = product.Display ? "Yes" : "No";
+                                var displayIcon = product.Display ? "http://image.flaticon.com/icons/svg/106/106901.svg" : "http://image.flaticon.com/icons/svg/106/106902.svg";
+                            }
+                            <img src="@displayIcon" alt="" width="25" /> @display
+                        </td>
+                        <td>
+                            <img src="@product.CurrentCategory.Icon" alt="" width="25" />
+                            @product.CurrentCategory.Name
+                        </td>
+                        <td>
+                            <img src="http://image.flaticon.com/icons/svg/287/287907.svg" alt="" width="25" /> @product.CurrentStorage.Name
+                        </td>
+                        <td style="text-align: center">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="glyphicon glyphicon-edit"></span>
+                                    Edit
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" style="text-align: left">
+                                    <li style="padding: 5px">
+                                        <a href="@Url.Action("DeleteProduct", "Product", new { id = product.Id }, null)">
+                                            <img src="http://image.flaticon.com/icons/svg/148/148962.svg" width="25" alt="" /> Delete Product
+                                        </a>
+                                    </li>
+                                    <li style="padding: 5px">
+                                        <a href="@Url.Action("EditProduct", "Product", new { id = product.Id }, null)">
+                                            <img src="http://image.flaticon.com/icons/svg/148/148914.svg" width="25" alt="" /> Edit Product
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                        <td>
+                    </tr>
+                                }
+            </tbody>
+        </table>
+    </div>
+    
+    @if (Model.PageCount > 1)
+    {
+        <div class="pager">
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page, sortOrder = ViewBag.currentSort, filterType = ViewBag.FilterType, filterValue = ViewBag.FilterValue }))
+            Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+        </div>
+    }
+</div>    
+
+@section Scripts {
+    @Scripts.Render("~/bundles/pin")
+    <script>
+        $(".btn-block")
+            .pin({
+                containerSelector: ".container",
+                padding: { top: 10, bottom: 10 }
+            });
+
+        $(".btn.block")
+            .pin({
+                minWidth: 1199
+            });
+    </script>
+}

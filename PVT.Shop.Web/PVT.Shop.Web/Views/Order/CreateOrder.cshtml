@@ -1,0 +1,134 @@
+﻿@using System.Globalization
+@model PVT.Shop.Infrastructure.Common.ViewModels.OrderViewModel
+
+@{
+    ViewBag.Title = "Order";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading">Order</div>
+        <div class="panel-body">
+            <div class="input-group col-xs-12">
+                
+                <h2 class="text-center">
+                    Basket:
+                </h2>
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th></th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in Model.OrderBasket.BasketItems)
+                    {
+                        <tr>
+                            <td style="vertical-align: middle;">@item.Product.Name</td>
+                            <td>
+                                <img src="@item.Product.Image" alt="" height="100" />
+                            </td>
+                            <td style="vertical-align: middle;"><img src="http://image.flaticon.com/icons/svg/265/265759.svg" alt="" width="25" /> @item.Quantity</td>
+                            <td style="vertical-align: middle;"><img src="http://image.flaticon.com/icons/svg/179/179444.svg" alt="" width="25" /> @item.Product.Price.ToString(CultureInfo.InvariantCulture)</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+                
+                <hr class="divider"/>
+                
+                <div class="col-xs-12">
+                    <div class="col-xs-6">
+                        <h3 class="text-left">
+                            Total Products: @Model.OrderBasket.BasketItems.Count()
+                            <img src="http://image.flaticon.com/icons/svg/265/265759.svg" alt="" width="30" />
+                        </h3>
+                    </div>
+                    <div class="col-xs-6">
+                        <h3 class="text-right">
+                            Total Price: @Model.OrderBasket.GetItemsSum().ToString(CultureInfo.InvariantCulture)
+                            <img src="http://image.flaticon.com/icons/svg/179/179444.svg" alt="" width="30" />
+                        </h3>
+                    </div>
+                </div>
+                
+                
+                <h2 class="text-center" style="padding-top: 60px">
+                   Order Details:
+                </h2>
+
+                @using (Html.BeginForm("CreateOrder", "Order", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.OrderUser.FirstName)
+                        @Html.TextBoxFor(m => m.OrderUser.FirstName, new { @class = "form-control", @style = "max-width: none" })
+                        @Html.ValidationMessageFor(m => m.OrderUser.FirstName)
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.OrderUser.LastName)
+                        @Html.TextBoxFor(m => m.OrderUser.LastName, new { @class = "form-control", @style = "max-width: none" })
+                        @Html.ValidationMessageFor(m => m.OrderUser.LastName)
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.OrderUser.Phone)
+                        @Html.TextBoxFor(m => m.OrderUser.Phone, new { @class = "form-control", @style = "max-width: none" })
+                        @Html.ValidationMessageFor(m => m.OrderUser.Phone)
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.OrderUser.Address.Country)
+                        @Html.TextBoxFor(m => m.OrderUser.Address.Country.Name, new { @class = "form-control", @style = "max-width: none" })
+                        @Html.ValidationMessageFor(m => m.OrderUser.Address.Country.Name)
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.OrderUser.Address.City)
+                        @Html.TextBoxFor(m => m.OrderUser.Address.City, new { @class = "form-control", @style = "max-width: none",})
+                        @Html.ValidationMessageFor(m => m.OrderUser.Address.City)
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.OrderUser.Address.Street)
+                        @Html.TextBoxFor(m => m.OrderUser.Address.Street, new { @class = "form-control", @style = "max-width: none"})
+                        @Html.ValidationMessageFor(m => m.OrderUser.Address.Street)
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.OrderUser.Address.Postcode)
+                        @Html.TextBoxFor(m => m.OrderUser.Address.Postcode, new { @class = "form-control", @style = "max-width: none"})
+                        @Html.ValidationMessageFor(m => m.OrderUser.Address.Postcode)
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.OrderUser.Address.ApartmentNumber)
+                        @Html.TextBoxFor(m => m.OrderUser.Address.ApartmentNumber, new { @class = "form-control", @style = "max-width: none"})
+                        @Html.ValidationMessageFor(m => m.OrderUser.Address.ApartmentNumber)
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.OrderUser.Address.HomeNumber)
+                        @Html.TextBoxFor(m => m.OrderUser.Address.HomeNumber, new { @class = "form-control", @style = "max-width: none"})
+                        @Html.ValidationMessageFor(m => m.OrderUser.Address.HomeNumber)
+                    </div>
+
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success">Create Order</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
